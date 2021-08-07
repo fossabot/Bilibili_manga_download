@@ -90,6 +90,7 @@ class MainGUI:
         sessdata = self.manga_sessdata_entry.get()
         manga_id = self.manga_id_entry.get()
         manga_range = self.manga_range_entry.get()
+        pass
         download_main(manga_id, manga_range, sessdata, self.manga_log_output)
 
     # 获取输入数据,开始任务
