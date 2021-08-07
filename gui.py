@@ -1,9 +1,10 @@
 from tkinter import tix, StringVar
+import tkinter.ttk
 # from tkinter import END
 from tkinter.scrolledtext import ScrolledText
 from download_gui import download_main, download_purchase_status
 from settings import cookie_file
-from download_gui import main_gui_log_insert
+from download_gui import main_gui_log_insert, download_manga_quantity
 
 TCL_ALL_EVENTS = 0
 
@@ -15,8 +16,8 @@ class MainGUI:
         # 窗口建立
         self.manga_window = w.winfo_toplevel()
         self.manga_window.wm_protocol("WM_DELETE_WINDOW", lambda self_self=self: self.quitcmd())
-        self.manga_window.minsize(800, 600)  # 最小尺寸
-        self.manga_window.maxsize(800,600)
+        # self.manga_window.minsize(800, 600)  # 最小尺寸
+        # self.manga_window.maxsize(800, 600)
         self.manga_window.title('Bilibili漫画下载    V1.2    仅限Mox内部使用')
         balloon_massage = tix.Balloon(w)
         # 窗口元素对齐
@@ -48,8 +49,7 @@ class MainGUI:
         # 漫画章节数据输入框
         self.manga_range_label = tix.Label(self.manga_window, text='下载的章节范围为：', font=('Arial', 12))
         self.manga_range_label.place(x=gui_interval_left, y=gui_interval_up + gui_interval_each * 2)
-        self.manga_range_entry = tix.Entry(self.manga_window, show=None, font=('Arial', 14), exportselection=0,
-                                           width=25)
+        self.manga_range_entry = tix.Entry(self.manga_window, show=None, font=('Arial', 14), exportselection=0, width=25)
         self.manga_range_entry.place(x=180, y=gui_interval_up + gui_interval_each * 2)
         balloon_massage.bind_widget(self.manga_range_entry, balloonmsg='输入0为下载全部，单章直接输入，连续下载用“-”，可用逗号隔开，\n如“12，16-18”表示下载12，16，17，18话')
 
@@ -77,8 +77,20 @@ class MainGUI:
         manga_stop_button.place(x=704, y=gui_interval_up + gui_interval_each)
         balloon_massage.bind_widget(manga_stop_button, balloonmsg='启动自毁')
 
+        # 测试按钮
+        manga_test_button = tix.Button(self.manga_window, width=6, height=1, font=('Arial', 14), command=self.main_manga_quantity, text='Test', )
+        manga_test_button.place(x=300, y=gui_interval_up + gui_interval_each)
+        balloon_massage.bind_widget(manga_stop_button, balloonmsg='Test')
+
         # 进度条
         # TODO 在界面增加一个进度条
+
+    #
+    def main_manga_quantity(self):
+        sessdata = self.manga_sessdata_entry.get()
+        manga_id = self.manga_id_entry.get()
+        manga_range = self.manga_range_entry.get()
+        download_main(manga_id, manga_range, sessdata, self.manga_log_output)
 
     # 获取输入数据,开始任务
     def main_gui_start(self):

@@ -141,6 +141,8 @@ def download_manga_episode(episode_id: int, root_path: str, text_output: Scrolle
     ep_path = os.path.join(root_path, title)
     if not os.path.exists(ep_path):
         os.makedirs(ep_path)
+    main_gui_log_insert(str(len(pics)) + '\n', text_output)
+    exit()
     for i, e in enumerate(pics):
         url = get_image_url(e)
         main_gui_log_insert('第' + str(i + 1) + '页    ' + e + '\n', text_output)
@@ -151,6 +153,29 @@ def download_manga_episode(episode_id: int, root_path: str, text_output: Scrolle
             pass
         if i % 4 == 0 and i != 0:
             sleep(1)
+
+
+# 页数查询
+def download_manga_quantity(episode_id: int, text_output: ScrolledText):
+    res = requests.post(url_GetEpisode, json.dumps({"id": episode_id}), headers=headers)
+    data = json.loads(res.text)
+    # comic_title = data['data']['comic_title']
+    short_title = data['data']['short_title']
+    # title = comic_title + '_' + short_title + '_' + data['data']['title']
+    title = short_title + '_' + data['data']['title']
+    comic_id = data['data']['comic_id']
+
+    # 获取索引文件cdn位置
+    # url = str('https://manga.bilibili.com/twirp/comic.v1.Comic/GetImageIndex?device=pc&platform=web')
+    res = requests.post(url_GetImageIndex, json.dumps({"ep_id": episode_id}), headers=headers)
+    data = json.loads(res.text)
+    index_url = 'https://manga.hdslb.com' + data['data']['path']
+    # print('获取索引文件cdn位置:', index_url)
+    # 获取索引文件
+    res = requests.get(index_url)
+    # 解析索引文件
+    pics = decode_index_data(comic_id, episode_id, res.content)
+    main_gui_log_insert(str(len(pics)) + '\n', text_output)
 
 
 # 漫画标题获取
