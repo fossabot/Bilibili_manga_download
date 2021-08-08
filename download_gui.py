@@ -127,7 +127,6 @@ def download_manga_episode(episode_id: int, root_path: str, text_output: Scrolle
     main_gui_log_insert('正在下载：' + title + '\n', text_output)
 
     # 获取索引文件cdn位置
-    # url = str('https://manga.bilibili.com/twirp/comic.v1.Comic/GetImageIndex?device=pc&platform=web')
     res = requests.post(url_GetImageIndex, json.dumps({"ep_id": episode_id}), headers=headers)
     data = json.loads(res.text)
     index_url = 'https://manga.hdslb.com' + data['data']['path']
@@ -141,8 +140,6 @@ def download_manga_episode(episode_id: int, root_path: str, text_output: Scrolle
     ep_path = os.path.join(root_path, title)
     if not os.path.exists(ep_path):
         os.makedirs(ep_path)
-    main_gui_log_insert(str(len(pics)) + '\n', text_output)
-    exit()
     for i, e in enumerate(pics):
         url = get_image_url(e)
         main_gui_log_insert('第' + str(i + 1) + '页    ' + e + '\n', text_output)
@@ -155,27 +152,31 @@ def download_manga_episode(episode_id: int, root_path: str, text_output: Scrolle
             sleep(1)
 
 
-# 页数查询
-def download_manga_quantity(episode_id: int, text_output: ScrolledText):
-    res = requests.post(url_GetEpisode, json.dumps({"id": episode_id}), headers=headers)
-    data = json.loads(res.text)
-    # comic_title = data['data']['comic_title']
-    short_title = data['data']['short_title']
-    # title = comic_title + '_' + short_title + '_' + data['data']['title']
-    title = short_title + '_' + data['data']['title']
-    comic_id = data['data']['comic_id']
-
-    # 获取索引文件cdn位置
-    # url = str('https://manga.bilibili.com/twirp/comic.v1.Comic/GetImageIndex?device=pc&platform=web')
-    res = requests.post(url_GetImageIndex, json.dumps({"ep_id": episode_id}), headers=headers)
-    data = json.loads(res.text)
-    index_url = 'https://manga.hdslb.com' + data['data']['path']
-    # print('获取索引文件cdn位置:', index_url)
-    # 获取索引文件
-    res = requests.get(index_url)
-    # 解析索引文件
-    pics = decode_index_data(comic_id, episode_id, res.content)
-    main_gui_log_insert(str(len(pics)) + '\n', text_output)
+# 页数查询(以列表形式储存)
+def download_manga_quantity(comic_id: int, text_output: ScrolledText):
+    res = requests.post(url_ComicDetail, json.dumps({"comic_id": comic_id}), headers=headers)
+    data = json.loads(res.text)['data']
+    manga_list = data['ep_list']
+    manga_list.reverse()
+    manga_quantity_list = []
+    for ep in manga_list:
+        if not ep['is_locked']:
+            res = requests.post(url_GetEpisode, json.dumps({"id": ep['id']}), headers=headers)
+            data = json.loads(res.text)
+            comic_id = data['data']['comic_id']
+            # 获取索引文件cdn位置
+            res = requests.post(url_GetImageIndex, json.dumps({"ep_id": ep['id']}), headers=headers)
+            data = json.loads(res.text)
+            index_url = 'https://manga.hdslb.com' + data['data']['path']
+            # 获取索引文件
+            res = requests.get(index_url)
+            # 解析索引文件
+            pics = decode_index_data(comic_id, ep['id'], res.content)
+            main_gui_log_insert(str(len(pics)) + '\n', text_output)
+            manga_quantity_list.append(len(pics))
+        else:
+            break
+    print(manga_quantity_list)
 
 
 # 漫画标题获取
