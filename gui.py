@@ -1,5 +1,5 @@
 from tkinter import tix, StringVar
-import tkinter.ttk
+# import tkinter.ttk
 # from tkinter import END
 from tkinter.scrolledtext import ScrolledText
 from download_gui import download_main, download_purchase_status
@@ -18,15 +18,13 @@ class MainGUI:
         self.manga_window.wm_protocol("WM_DELETE_WINDOW", lambda self_self=self: self.quitcmd())
         # self.manga_window.minsize(800, 600)  # 最小尺寸
         # self.manga_window.maxsize(800, 600)
-        self.manga_window.title('Bilibili漫画下载    V1.2    仅限Mox内部使用')
+        self.manga_window.title('Bilibili漫画下载    V1.2。2    仅限Mox内部使用')
         balloon_massage = tix.Balloon(w)
         # 窗口元素对齐
         gui_interval_left: int = 25
         gui_interval_up: int = 10
         gui_interval_each: int = 35
         self.manga_window.update()
-        gui_delta_x: int = self.manga_window.winfo_width() - 800
-        gui_delta_y: int = self.manga_window.winfo_height() - 600
 
         # 用户SESSDATA输入框
         self.manga_sessdata_label = tix.Label(self.manga_window, text='用户SESSDATA=', font=('Arial', 12))
@@ -58,40 +56,37 @@ class MainGUI:
         self.manga_log_output.place(x=0, y=gui_interval_up + gui_interval_each * 3)
 
         # 开始按钮
-        manga_range_button = tix.Button(self.manga_window, width=20, height=2, font=('Arial', 14), command=self.main_gui_start, text='开始', )
-        manga_range_button.place(x=470, y=gui_interval_up + gui_interval_each)
-        balloon_massage.bind_widget(manga_range_button, balloonmsg='点击即可开始搜索下载')
+        self.manga_range_button = tix.Button(self.manga_window, width=20, height=2, font=('Arial', 14), command=self.main_gui_start, text='开始', )
+        self.manga_range_button.place(x=470, y=gui_interval_up + gui_interval_each)
+        balloon_massage.bind_widget(self.manga_range_button, balloonmsg='点击即可开始搜索下载')
 
         # 检查购买情况
-        manga_check_button = tix.Button(self.manga_window, width=13, height=1, font=('Arial', 14), command=self.main_gui_check, text='检查购买', )
-        manga_check_button.place(x=470, y=gui_interval_up - 5)
-        balloon_massage.bind_widget(manga_check_button, balloonmsg='检查购买情况')
+        self.manga_check_button = tix.Button(self.manga_window, width=13, height=1, font=('Arial', 14), command=self.main_gui_check, text='检查购买', )
+        self.manga_check_button.place(x=470, y=gui_interval_up - 5)
+        balloon_massage.bind_widget(self.manga_check_button, balloonmsg='检查购买情况')
 
         # 更新cookie文件数据
-        manga_check_button = tix.Button(self.manga_window, width=13, height=1, font=('Arial', 14), command=self.main_cookie_renovate, text='更新cookie储存', )
-        manga_check_button.place(x=627, y=gui_interval_up - 5)
-        balloon_massage.bind_widget(manga_check_button, balloonmsg='点击此按钮可更新软件缓存文件中的cookie数据')
+        self.manga_check_button = tix.Button(self.manga_window, width=13, height=1, font=('Arial', 14), command=self.main_cookie_renovate, text='更新cookie储存', )
+        self.manga_check_button.place(x=627, y=gui_interval_up - 5)
+        balloon_massage.bind_widget(self.manga_check_button, balloonmsg='点击此按钮可更新软件缓存文件中的cookie数据')
 
         # 中止按钮
-        manga_stop_button = tix.Button(self.manga_window, width=6, height=2, font=('Arial', 14), command=self.main_gui_stop, text='停止', )
-        manga_stop_button.place(x=704, y=gui_interval_up + gui_interval_each)
-        balloon_massage.bind_widget(manga_stop_button, balloonmsg='启动自毁')
+        self.manga_stop_button = tix.Button(self.manga_window, width=6, height=2, font=('Arial', 14), command=self.main_gui_stop, text='停止', )
+        self.manga_stop_button.place(x=704, y=gui_interval_up + gui_interval_each)
+        balloon_massage.bind_widget(self.manga_stop_button, balloonmsg='启动自毁')
 
         # 测试按钮
-        manga_test_button = tix.Button(self.manga_window, width=6, height=1, font=('Arial', 14), command=self.main_manga_quantity, text='Test', )
-        manga_test_button.place(x=300, y=gui_interval_up + gui_interval_each)
-        balloon_massage.bind_widget(manga_stop_button, balloonmsg='Test')
+        self.manga_test_button = tix.Button(self.manga_window, width=6, height=1, font=('Arial', 14), command=self.main_manga_quantity, text='Test', )
+        self.manga_test_button.place(x=706, y=116)
+        balloon_massage.bind_widget(self.manga_test_button, balloonmsg='Test')
 
         # 进度条
         # TODO 在界面增加一个进度条
 
-    #
+    # 获取输入数据,输出漫画页数
     def main_manga_quantity(self):
-        sessdata = self.manga_sessdata_entry.get()
         manga_id = self.manga_id_entry.get()
-        manga_range = self.manga_range_entry.get()
-        pass
-        download_main(manga_id, manga_range, sessdata, self.manga_log_output)
+        download_manga_quantity(manga_id, self.manga_log_output)
 
     # 获取输入数据,开始任务
     def main_gui_start(self):
@@ -114,9 +109,8 @@ class MainGUI:
         file.close()
         main_gui_log_insert('cookie数据储存成功\n', self.manga_log_output)
 
-    # 终止下载
+    # 终止程序
     def main_gui_stop(self):
-        self.destroy()
         self.exit = 0
 
     def quitcmd(self):

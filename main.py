@@ -12,8 +12,7 @@ if __name__ == '__main__':
     manga_window = Tk()
     manga_window.wm_geometry('800x600')
     manga_window.wm_resizable(False, False)
-    balloon = MainGUI(manga_window)
-    balloon.mainloop()
-    balloon.destroy()
-    manga_window.mainloop()
-    exit()
+    manga_window.update()
+    MainGUI(manga_window).mainloop()
+    MainGUI(manga_window).destroy()
+
