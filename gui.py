@@ -20,7 +20,7 @@ class MainGUI:
         gui_interval_left: int = 15
         gui_interval_up: int = 10
         gui_interval_each: int = 35
-        tkinter.ttk.Style().configure('TButton', font=('Helvetica', 12))
+        tkinter.ttk.Style().configure(' TButton', font=('Helvetica', 12))
         self.manga_window.update()
 
         # 用户SESSDATA输入框
