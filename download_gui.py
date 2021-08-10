@@ -2,7 +2,7 @@ import os
 import requests
 import json
 from decode import decode_index_data, get_image_url
-from settings import download_path, headers, url_Domestic_ComicDetail, url_Domestic_GetImageIndex, url_Domestic_GetEpisode
+from settings import download_path, headers, url_Domestic_ComicDetail, url_Domestic_GetImageIndex, url_Domestic_GetEpisode, letter_legal
 from tkinter.scrolledtext import ScrolledText
 from time import sleep
 
@@ -21,40 +21,38 @@ def download_main(comic_id: int, download_range: str, sessdata: str, text_output
     download_range.replace('，', ',')
     download_range.replace('—', '-')
     # 对用户输入的章节数据进行读取
+    download_range_cut = download_range.rstrip().split(',')
     start = int(0)  # 范围下载第一位
     destination = int(0)  # 范围下载第二位
     state = False  # 是否为批量下载
-    frequency = int(0)  # 第几位字符
-    for letter in download_range:
-        frequency = frequency + 1
-        if letter == ',':
-            if not state:
-                section = start
-                download_manga_each(comic_id, section, text_output)
-                continue
-            else:
-                download_manga_range(comic_id, start, destination, text_output)
-                # 初始化控制变量
-                start = int(0)
-                destination = int(0)
-                state = False
-        elif letter == '-':
-            state = True
-            continue
-        else:
-            if not state:
+    print(download_range)
+    print(download_range_cut)
+    print(len(download_range_cut))
+    if len(download_range_cut) == 1:
+        download_range_cut[1] = download_range_cut[1][1:]
+        download_range_cut[1] = download_range_cut[1][:1]
+    else:
+        download_range_cut[1] = download_range_cut[1][1:]
+        download_range_cut[2] = download_range_cut[2][:1]
+    for piece in download_range_cut:
+        for letter in piece:
+            if letter == '=':
+                state = True
+            elif letter not in letter_legal:
+                main_gui_log_insert('输入非法字符，操作停止' + '\n\n\n', text_output)
+                exit()
+            elif state:
                 start = start * 10 + int(letter)
-                continue
-            if state:
+            elif not state:
                 destination = destination * 10 + int(letter)
-                continue
-    # 检查是否为最后一块
-    if frequency == len(download_range):
-        if not state:
-            section = start
-            download_manga_each(comic_id, section, text_output)
-        else:
+
+        if state:
             download_manga_range(comic_id, start, destination, text_output)
+        else:
+            download_manga_each(comic_id, start, text_output)
+        start = int(0)  # 范围下载第一位
+        destination = int(0)  # 范围下载第二位
+        state = False  # 是否为批量下载
     main_gui_log_insert('下载完毕' + '\n\n\n', text_output)
 
 
@@ -105,7 +103,7 @@ def download_manga_each(comic_id: int, section: int, text_output: ScrolledText):
             # section_temp = int(ep['short_title'])
             if int(ep['short_title']) == section:
                 main_gui_log_insert('正在下载第' + ep['short_title'].rjust(3, '0') + '话：' + ep['title'] + '\n', text_output)
-                download_manga_episode(ep['id'], root_path, text_output)
+                # download_manga_episode(ep['id'], root_path, text_output)
         else:
             main_gui_log_insert('其余章节未下载' + '\n', text_output)
             break
