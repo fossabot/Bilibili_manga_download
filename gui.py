@@ -53,7 +53,7 @@ class MainGUI:
         self.manga_log_output.place(x=0, y=gui_interval_up + gui_interval_each * 3)
 
         # 开始按钮
-        self.manga_range_button = tkinter.ttk.Button(self.manga_window, width=20, height=2, font=('Arial', 14), command=self.main_gui_start, text='开始', )
+        self.manga_range_button = tix.Button(self.manga_window, width=20, height=2, font=('Arial', 14), command=self.main_gui_start, text='开始', )
         self.manga_range_button.place(x=470, y=gui_interval_up + gui_interval_each)
         balloon_massage.bind_widget(self.manga_range_button, balloonmsg='点击即可开始搜索下载')
 

@@ -4,6 +4,7 @@ url_Domestic_ImageToken = str('https://manga.bilibili.com/twirp/comic.v1.Comic/I
 url_Domestic_GetImageIndex = str('https://manga.bilibili.com/twirp/comic.v1.Comic/GetImageIndex?device=pc&platform=web')
 url_Domestic_GetEpisode = str('https://manga.bilibili.com/twirp/comic.v1.Comic/GetEpisode?device=pc&platform=web')
 url_Domestic_ComicDetail = str("https://manga.bilibili.com/twirp/comic.v2.Comic/ComicDetail?device=pc&platform=web")
+letter_legal = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 headers = {
     "accept": "application/json, text/plain, */*",
     "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
